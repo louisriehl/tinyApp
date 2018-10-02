@@ -2,7 +2,6 @@ const db = [
   { long: "http://www.lighthouselabs.ca", short: "b2xVn2" },
   { long: "http://www.google.com", short: "9sm5xK"},
   { long: "https://www.example.com", short: "ba985d"},
-  { long: "https://www.thisurldoesntwork.com", short: "oopsie"}
 ];
 
 module.exports= {
