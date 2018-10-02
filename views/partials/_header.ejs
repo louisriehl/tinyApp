@@ -9,6 +9,9 @@
   </form>
   <% } else { %>
   <p><%= username %> is logged in.</p>
+  <form method="POST" action="/logout">
+  <button type="submit">Logout</button>
+  </form>
   <% } %>
 </header>
 </html>
