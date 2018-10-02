@@ -6,12 +6,6 @@ const db = require("./database");
 
 app.set("view engine", "ejs");
 
-//database of temporary keys
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -29,6 +23,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   console.log(`Request at id: ${req.params.id}`);
   let templateVars = {single: db.byShort(req.params.id)};
+  console.log(`Requested object: ${templateVars.single.long} - ${templateVars.single.short}`);
   res.render("urls_show", templateVars);
 });
 
