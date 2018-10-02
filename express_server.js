@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); //allows us to access POST request parameters
 const app = express();
 const PORT = 8080; //default port
@@ -7,6 +8,7 @@ const db = require("./database");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 // GETS
 app.get("/", (req, res) => {
