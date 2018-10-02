@@ -14,17 +14,29 @@ form {
 </header>
 
 <body>
-  <ul>
-    <% for (let red in urls) { %>
-      <li><%= urls[red]['short'] %> = <%= urls[red]['long'] %>
-        <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
-          <button type="delete">Remove</button>
-        </form>
-      </li>
-    <% }; %>
-  </ul>
 
-  <a href="urls/new">Shorten a new url!</a>
+  <table>
+    <tr>
+      <th>Short URL Code</th>
+      <th>Original Url</th>
+      <th></th>
+      <th></th>
+    </tr>
+    <% for (let red in urls) { %>
+      <tr>
+        <td><%= urls[red]['short'] %></td>
+        <td><a href="<%= urls[red]['long'] %>"><%= urls[red]['long'] %></a></td>
+        <td><form action="/urls/<%= urls[red]['short']%>"><button type="submit">Edit</button></td>
+        <td>
+          <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
+            <button type="delete">Remove</button>
+          </form>
+        </td>
+      </tr>
+      <% }; %>
+  </table>
+
+  <form action="/urls/new"><button type="submit">Shorten another URL!</button>
 </body>
 
 </html>
