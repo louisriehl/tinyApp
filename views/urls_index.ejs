@@ -3,6 +3,11 @@
 <head>
   <title>TinyApp</title>
 </head>
+<style>
+form {
+    display: inline-block; //Or display: inline;
+}
+</style>
 
 <header>
   <% include ./partials/_header %>
@@ -11,12 +16,14 @@
 <body>
   <ul>
     <% for (let red in urls) { %>
-      <li><%= urls[red]['short'] %> = <%= urls[red]['long'] %></li>
+      <li><%= urls[red]['short'] %> = <%= urls[red]['long'] %>
+        <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
+          <button type="delete">Remove</button>
+        </form>
+      </li>
     <% }; %>
   </ul>
-  <form method="POST" action="/urls/oopsie/delete">
-    <button type="delete">Delete Wrong Url</button>
-  </form>
+
   <a href="urls/new">Shorten a new url!</a>
 </body>
 
