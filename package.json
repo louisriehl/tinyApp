@@ -1,0 +1,12 @@
+{
+  "name": "tinyApp",
+  "version": "1.0.0",
+  "description": "To build a server using node and HTTP, as well as express, that can shorten URLs for users to redirect others while avoiding long, ugly URLs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
