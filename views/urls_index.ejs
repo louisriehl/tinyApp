@@ -15,26 +15,30 @@ form {
 
 <body>
 
-  <table>
-    <tr>
-      <th>Short URL Code</th>
-      <th>Original Url</th>
-      <th></th>
-      <th></th>
-    </tr>
-    <% for (let red in urls) { %>
+  <% if (urls[0]) {%>
+    <table>
       <tr>
-        <td><%= urls[red]['short'] %></td>
-        <td><a href="<%= urls[red]['long'] %>"><%= urls[red]['long'] %></a></td>
-        <td><form action="/urls/<%= urls[red]['short']%>"><button type="submit">Edit</button></form></td>
-        <td>
-          <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
-            <button type="delete">Remove</button>
-          </form>
-        </td>
+        <th>Short URL Code</th>
+        <th>Original Url</th>
+        <th></th>
+        <th></th>
       </tr>
-      <% }; %>
-  </table>
+      <% for (let red in urls) { %>
+        <tr>
+          <td><%= urls[red]['short'] %></td>
+          <td><a href="<%= urls[red]['long'] %>"><%= urls[red]['long'] %></a></td>
+          <td><form action="/urls/<%= urls[red]['short']%>"><button type="submit">Edit</button></form></td>
+          <td>
+            <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
+              <button type="delete">Remove</button>
+            </form>
+          </td>
+        </tr>
+        <% }; %>
+    </table>
+  <% } else { %>
+    <p>Oops, you haven't made any urls yet!</p>
+  <% } %>
 
   <form action="/urls/new"><button type="submit">Shorten another URL!</button>
 </body>
