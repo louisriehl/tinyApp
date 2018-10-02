@@ -48,20 +48,23 @@ app.get("/hello", (req, res) => {
 
 // POSTS
 app.post("/urls", (req, res) => { // Catches POST requests made to /urls
-  console.log(req.body); // show POST parameters
-  console.log(generateRandomKey());
-  res.send("Ok!");
+  let long = req.body.longURL; // show POST parameters
+  let short = generateRandomKey();
+  console.log(`The new url is ${long} and the key is ${short}`);
+  db.add(long, short);
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  // console.log(req.body);
-  // console.log(`Id of oopsie is ${db.index('oopsie')}`);
-  // console.log(`Deleting...`);
-  // db.delete(db.index('oopsie'));
   let idToDelete = db.index(req.params.id);
   db.delete(idToDelete);
-  // console.log(`Delete request made at ${req.params.id}!`);
-  // res.send("Deleted!");
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id", (req, res) => {
+  let update = req.body.newLong;
+  let id = db.index(req.params.id);
+  db.update(id, update);
   res.redirect("/urls");
 });
 
@@ -80,4 +83,8 @@ function generateRandomKey () {
     key += String.fromCharCode(digit).toLowerCase();
   }
   return key;
+}
+
+function validateURL (string) {
+
 }

@@ -20,6 +20,10 @@ form {
         <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
           <button type="delete">Remove</button>
         </form>
+        <form method="POST" action="/urls/<%= urls[red]['short']%>">
+          Update Url:<input type="text" name="newLong">
+          <button type="submit">Submit</button>
+        </form>
       </li>
     <% }; %>
   </ul>

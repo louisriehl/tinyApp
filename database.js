@@ -9,7 +9,8 @@ module.exports= {
   all: () => db,
   byShort: (sh) => db.find(e => e.short == sh), // if we find an element whose short value is the same as sh, return it
   byLong: (lo) => db.find(e => e.long == lo), // if we find an element whose long value is the same as lo, return it
-  update: (lo, sh) => db.push({ long: lo, short: sh}), //updates db?
+  add: (lo, sh) => db.push({ long: lo, short: sh}), //updates db?
+  update: (i, lo) => db[i]['long'] = lo,
   index: (sh) => db.findIndex(e => e.short == sh), //returns id of a url
   delete: (i) => db.splice( i, 1 ) //removes object with matching short
 };
