@@ -26,7 +26,7 @@ form {
       <tr>
         <td><%= urls[red]['short'] %></td>
         <td><a href="<%= urls[red]['long'] %>"><%= urls[red]['long'] %></a></td>
-        <td><form action="/urls/<%= urls[red]['short']%>"><button type="submit">Edit</button></td>
+        <td><form action="/urls/<%= urls[red]['short']%>"><button type="submit">Edit</button></form></td>
         <td>
           <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
             <button type="delete">Remove</button>

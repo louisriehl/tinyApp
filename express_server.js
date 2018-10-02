@@ -58,6 +58,7 @@ app.post("/urls", (req, res) => { // Catches POST requests made to /urls
 app.post("/urls/:id/delete", (req, res) => {
   let idToDelete = db.index(req.params.id);
   db.delete(idToDelete);
+  console.log("Deleting...");
   res.redirect("/urls");
 });
 
