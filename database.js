@@ -6,6 +6,6 @@ const db = [
 
 module.exports= {
   all: () => db,
-  byShort: (short) => db.find(e => e.short == e),
-  byLong: (long) => db.find(e => e.long == e)
+  byShort: (sh) => db.find(e => e.short == sh), // if we find an element whose short value is the same as sh, return it
+  byLong: (lo) => db.find(e => e.long == lo) // if we find an element whose long value is the same as lo, return it
 };
