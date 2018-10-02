@@ -14,7 +14,9 @@
       <li><%= urls[red]['short'] %> = <%= urls[red]['long'] %></li>
     <% }; %>
   </ul>
-
+  <form method="POST" action="/urls/oopsie/delete">
+    <button type="delete">Delete Wrong Url</button>
+  </form>
   <a href="urls/new">Shorten a new url!</a>
 </body>
 

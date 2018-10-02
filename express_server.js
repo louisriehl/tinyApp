@@ -53,6 +53,18 @@ app.post("/urls", (req, res) => { // Catches POST requests made to /urls
   res.send("Ok!");
 });
 
+app.post("/urls/oopsie/delete", (req, res) => {
+  console.log(req.body);
+  console.log(`Id of oopsie is ${db.index('oopsie')}`);
+  console.log(`Deleting...`);
+  db.delete(db.index('oopsie'));
+  // let idToDelete = db.index(req.params.id);
+  // db.delete(idToDelete);
+  // console.log(`Delete request made at ${req.params.id}!`);
+  // res.send("Deleted!");
+  res.redirect("/urls");
+});
+
 // LISTENS
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}...`);
