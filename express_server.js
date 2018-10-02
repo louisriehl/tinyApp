@@ -16,34 +16,34 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", {username: req.cookies["username"]});
 });
 
 // Handler that redirects based on a given id parameter
 app.get("/u/:id", (req, res) => {
- let templateVars = {single: db.byShort(req.params.id)};
- console.log(`Attempting to redirect to ${templateVars.single.long}...`);
+ let templateVars = { single: db.byShort(req.params.id), username: req.cookies["username"] };
+ // console.log(`Attempting to redirect to ${templateVars.single.long}...`);
  res.status(301);
  res.redirect(templateVars.single.long);
 });
 
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
-  console.log(`Request at id: ${req.params.id}`);
-  let templateVars = {single: db.byShort(req.params.id)};
-  console.log(`Requested object: ${templateVars.single.long} - ${templateVars.single.short}`);
+  // console.log(`Request at id: ${req.params.id}`);
+  let templateVars = {single: db.byShort(req.params.id), username: req.cookies["username"] };
+  // console.log(`Requested object: ${templateVars.single.long} - ${templateVars.single.short}`);
   res.render("urls_show", templateVars);
 });
 
 // Shows all the urls in JSON format for debugging
 app.get("/urls.json", (req, res) => {
-  let templateVars = { urls: db.all() };
+  let templateVars = { urls: db.all(), username: req.cookies["username"] };
   res.json(templateVars);
 });
 
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: db.all() };
+  let templateVars = { urls: db.all(), username: req.cookies["username"] };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
