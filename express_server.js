@@ -10,7 +10,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-// GETS
+/* --- GETS --- */
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -27,6 +27,7 @@ app.get("/u/:id", (req, res) => {
  res.redirect(templateVars.single.long);
 });
 
+// Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
   console.log(`Request at id: ${req.params.id}`);
   let templateVars = {single: db.byShort(req.params.id)};
@@ -34,21 +35,31 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Shows all the urls in JSON format for debugging
 app.get("/urls.json", (req, res) => {
   let templateVars = { urls: db.all() };
   res.json(templateVars);
 });
 
+// Passes all urls before loading url index
 app.get("/urls", (req, res) => {
   let templateVars = { urls: db.all() };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
+// Root page
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>world!</b> </body></html>");
 });
 
-// POSTS
+/* ---- POSTS ----- */
+
+app.post("/login", (req, res) => {
+  let user = req.body.username;
+  res.cookie('username', user);
+  res.redirect("/urls");
+});
+
 app.post("/urls", (req, res) => { // Catches POST requests made to /urls
   let long = validateURL(req.body.longURL); // show POST parameters
   let short = generateRandomKey();
