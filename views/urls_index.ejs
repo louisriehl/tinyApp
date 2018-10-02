@@ -6,8 +6,8 @@
 
 <body>
   <ul>
-    <% for (let url in urls) { %>
-      <li><%= url %> - <%= urls[url] %></li>
+    <% for (let red in urls) { %>
+      <li><%= urls[red]['short'] %> - <%= urls[red]['long'] %></li>
     <% }; %>
   </ul>
 
