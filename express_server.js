@@ -21,6 +21,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/u/:id", (req, res) => {
  let templateVars = {single: db.byShort(req.params.id)};
  console.log(`Attempting to redirect to ${templateVars.single.long}...`);
+ res.status(301);
  res.redirect(templateVars.single.long);
 });
 
