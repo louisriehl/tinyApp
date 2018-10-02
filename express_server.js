@@ -27,6 +27,12 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/urls/:id/red", (req, res) => {
+ let templateVars = {single: db.byShort(req.params.id)};
+ console.log(`Attempting to redirect to ${templateVars.single.long}...`);
+ res.redirect(templateVars.single.long);
+});
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>world!</b> </body></html>");
 });
