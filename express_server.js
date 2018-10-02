@@ -48,7 +48,7 @@ app.get("/hello", (req, res) => {
 
 // POSTS
 app.post("/urls", (req, res) => { // Catches POST requests made to /urls
-  let long = req.body.longURL; // show POST parameters
+  let long = validateURL(req.body.longURL); // show POST parameters
   let short = generateRandomKey();
   console.log(`The new url is ${long} and the key is ${short}`);
   db.add(long, short);
@@ -63,7 +63,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  let update = req.body.newLong;
+  let update = validateURL(req.body.newLong);
   let id = db.index(req.params.id);
   db.update(id, update);
   res.redirect("/urls");
@@ -77,15 +77,25 @@ app.listen(PORT, () => {
 // FUNCTIONS
 function generateRandomKey () {
   let key = "";
+  let cap = false;
   for(let i = 0; i < 6; i++)
   {
     let digit = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
-    console.log(digit);
-    key += String.fromCharCode(digit).toLowerCase();
+    if (cap){
+      key += String.fromCharCode(digit);
+    } else {
+      key += String.fromCharCode(digit).toLowerCase();
+    }
+    cap = !cap;
   }
   return key;
 }
 
 function validateURL (string) {
-
+  if (!string.includes("http://") && !string.includes("https://"))
+  {
+    return 'http://' + string;
+  } else {
+    return string;
+  }
 }
