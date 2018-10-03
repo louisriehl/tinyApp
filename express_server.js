@@ -36,8 +36,12 @@ app.get("/", (req, res) => {
 
 // Fetch the new url page
 app.get("/urls/new", (req, res) => {
+  if (!req.cookies["user_id"]) {
+    res.redirect("/login");
+  } else {
   let currentID = req.cookies["user_id"];
   res.render("urls_new", {user: users[currentID]});
+  }
 });
 
 // Handler that redirects based on a given id parameter
@@ -68,7 +72,9 @@ app.get("/users.json", (req, res) => {
 // DEBUG: shows data of current user
 app.get("/current_user.json", (req, res) => {
   let currentID = req.cookies["user_id"];
-  res.json(users[currentID]);
+  let usersURLs = db.userURL(currentID);
+  let templateVars = { user: users[currentID], urls: usersURLs};
+  res.json(templateVars);
 });
 
 // Passes all urls before loading url index
