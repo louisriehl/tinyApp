@@ -10,6 +10,23 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+/* --- OBJECTS --- */
+
+// Relocate this later to be more modular...
+
+const users = {
+  "15guys": {
+    id: "15guys",
+    email: "guy@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "myiddude": {
+    id: "myiddude",
+    email: "dude@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 /* --- GETS --- */
 
 // Fetch the root page
@@ -75,7 +92,7 @@ app.post("/logout", (req, res) => {
 // Post to urls index first validates URL then adds the new url and key
 app.post("/urls", (req, res) => {
   let long = validateURL(req.body.longURL);
-  let short = generateRandomKey();
+  let short = generateRandomKey(6);
   db.add(long, short);
   res.redirect("/urls");
 });
@@ -107,10 +124,10 @@ app.listen(PORT, () => {
 /* ---- FUNCTIONS ----- */
 
 // Generates 6 digit key
-function generateRandomKey () {
+function generateRandomKey (length) {
   let key = "";
   let cap = false;
-  for(let i = 0; i < 6; i++)
+  for(let i = 0; i < length; i++)
   {
     let digit = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
     if (cap){
