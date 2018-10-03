@@ -46,10 +46,12 @@ app.get("/urls/new", (req, res) => {
 
 // Handler that redirects based on a given id parameter
 app.get("/u/:id", (req, res) => {
-  let currentID = req.cookies['user_id'];
-  let templateVars = { single: db.byShort(req.params.id), user: users[currentID] };
+  let short = req.params.id;
+  let id = db.owner(short);
+  let destination = db.getOne(id, short);
+  console.log(`short code: ${short}, id of owner is ${id}, target is: ${destination}`);
   res.status(301);
-  res.redirect(templateVars.single.long);
+  res.redirect(destination);
 });
 
 // Show the urls_show page of a specific shortened URL
