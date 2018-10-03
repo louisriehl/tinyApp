@@ -1,17 +1,23 @@
-# Goal
-To build a server using node and HTTP, as well as express, that can shorten URLs for users to redirect others while avoiding long, ugly URLs
+# TinyApp Project
+A simple node server that allows users to register for an account and shorten long urls into short ones. Each registered user is only allowed to modify their URLs, but your shortened URLs are available for anyone!
 
-# Functional Requirements
+## Learning Outcomes
+- How to handle requests using Express
+- How to integrate javascript into html with EJS
+- How to securely store user passwords and cookies using hashing and encryption
+- How to use POST and GET requests to update server-side information
+- How to more effectively use objects and arrays of objects
+- How to use ES6 syntax
 
-## User Stories
-_As an_ avid twitter poster,
-_I want_ to be able to shorten links
-so _that_ I can fit more non-link text in my tweets.
+## Dependencies
+- Node.js
+- Yarn
+- Express
+- EJS
+- bcrypt
+- body-parser
+- cookie-session
 
-_As a_ twitter reader,
-_I want_ to be able to visit sites via shortened links,
-so _that_ I can read interesting content.
-
-*(Stretch)* _As an_ avid twitter poster,
-_I want_ to be able to see how many times my subscribers visit my links
-so _that_ I can learn what content they like.
+## Get Started
+- Be sure to install all dependencies using the `yarn install` command
+- From the project directory, run `node express_server.js`
