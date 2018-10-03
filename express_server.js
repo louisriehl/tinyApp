@@ -36,25 +36,25 @@ app.get("/", (req, res) => {
 
 // Fetch the new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", {username: req.cookies["username"]});
+  res.render("urls_new", {user_id: req.cookies["user_id"]});
 });
 
 // Handler that redirects based on a given id parameter
 app.get("/u/:id", (req, res) => {
- let templateVars = { single: db.byShort(req.params.id), username: req.cookies["username"] };
+ let templateVars = { single: db.byShort(req.params.id), user_id: req.cookies["user_id"] };
  res.status(301);
  res.redirect(templateVars.single.long);
 });
 
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {single: db.byShort(req.params.id), username: req.cookies["username"] };
+  let templateVars = {single: db.byShort(req.params.id), user_id: req.cookies["user_id"] };
   res.render("urls_show", templateVars);
 });
 
 // Shows all the urls in JSON format for debugging
 app.get("/urls.json", (req, res) => {
-  let templateVars = { urls: db.all(), username: req.cookies["username"] };
+  let templateVars = { urls: db.all(), user_id: req.cookies["user_id"] };
   res.json(templateVars);
 });
 
@@ -64,7 +64,7 @@ app.get("/users.json", (req, res) => {
 
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: db.all(), username: req.cookies["username"] };
+  let templateVars = { urls: db.all(), user_id: req.cookies["user_id"] };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
@@ -78,18 +78,25 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 /* ---- POSTS ----- */
 
-// Post to login grabs username from request and returns a cookie
+// Post to login grabs user_id from request and returns a cookie
 app.post("/login", (req, res) => {
-  let user = req.body.username;
-  res.cookie('username', user);
+  let loginEmail = req.body.email;
+  console.log(`Email is ${loginEmail}`);
+  let id = findIDFromEmail(loginEmail);
+  console.log(`Id of ${loginEmail} is ${id}`);
+  res.cookie('user_id', id);
   res.redirect("/urls");
 });
 
-// Post to logout deletes the username cookie
+// Post to logout deletes the user_id cookie
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -114,18 +121,18 @@ app.post("/register", (req, res) => {
     }
     if(!invalid) {
       users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
-      res.cookie('username', newUserID);
+      res.cookie('user_id', newUserID);
       res.redirect("/urls");
     } else {
       res.status(400);
-      res.clearCookie("username");
+      res.clearCookie("user_id");
       res.send("<h1>400 email already registered</h1>");
     }
 
   } else {
     res.status(400);
-    res.clearCookie("username");
-    res.send("<h1>400 no username or password</h1>");
+    res.clearCookie("user_id");
+    res.send("<h1>400 no email or password</h1>");
   }
 });
 
@@ -175,4 +182,13 @@ function validateURL (string) {
   } else {
     return string;
   }
+}
+
+function findIDFromEmail (email) {
+  for (let id in users) {
+    if (users[id]['email'] == email) {
+      return users[id]['id'];
+    }
+  }
+  return null;
 }
