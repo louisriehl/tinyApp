@@ -36,25 +36,28 @@ app.get("/", (req, res) => {
 
 // Fetch the new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", {user_id: req.cookies["user_id"]});
+  let currentID = req.cookies["user_id"];
+  res.render("urls_new", {user: users[currentID]});
 });
 
 // Handler that redirects based on a given id parameter
 app.get("/u/:id", (req, res) => {
- let templateVars = { single: db.byShort(req.params.id), user_id: req.cookies["user_id"] };
- res.status(301);
- res.redirect(templateVars.single.long);
+  let currentID = req.cookies['user_id'];
+  let templateVars = { single: db.byShort(req.params.id), user: users[currentID] };
+  res.status(301);
+  res.redirect(templateVars.single.long);
 });
 
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {single: db.byShort(req.params.id), user_id: req.cookies["user_id"] };
+  let currentID = req.cookies['user_id'];
+  let templateVars = {single: db.byShort(req.params.id), user: users[currentID] };
   res.render("urls_show", templateVars);
 });
 
 // Shows all the urls in JSON format for debugging
 app.get("/urls.json", (req, res) => {
-  let templateVars = { urls: db.all(), user_id: req.cookies["user_id"] };
+  let templateVars = { urls: db.all() };
   res.json(templateVars);
 });
 
@@ -62,9 +65,16 @@ app.get("/users.json", (req, res) => {
   res.json(users);
 });
 
+// DEBUG: shows data of current user
+app.get("/current_user.json", (req, res) => {
+  let currentID = req.cookies["user_id"];
+  res.json(users[currentID]);
+});
+
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: db.all(), user_id: req.cookies["user_id"] };
+  let currentID = req.cookies["user_id"];
+  let templateVars = { urls: db.all(), user: users[currentID] };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
@@ -87,9 +97,9 @@ app.get("/login", (req, res) => {
 // Post to login grabs user_id from request and returns a cookie
 app.post("/login", (req, res) => {
   let loginEmail = req.body.email;
-  console.log(`Email is ${loginEmail}`);
+  // console.log(`Email is ${loginEmail}`);
   let id = findIDFromEmail(loginEmail);
-  console.log(`Id of ${loginEmail} is ${id}`);
+  // console.log(`Id of ${loginEmail} is ${id}`);
   res.cookie('user_id', id);
   res.redirect("/urls");
 });
