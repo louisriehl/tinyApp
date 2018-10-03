@@ -10,69 +10,153 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+/* --- OBJECTS --- */
+
+// Relocate this later to be more modular...
+
+const users = {
+  "15guys": {
+    id: "15guys",
+    email: "guy@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "myiddude": {
+    id: "myiddude",
+    email: "dude@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 /* --- GETS --- */
+
+// Fetch the root page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+// Fetch the new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", {username: req.cookies["username"]});
+  let currentID = req.cookies["user_id"];
+  res.render("urls_new", {user: users[currentID]});
 });
 
 // Handler that redirects based on a given id parameter
 app.get("/u/:id", (req, res) => {
- let templateVars = { single: db.byShort(req.params.id), username: req.cookies["username"] };
- // console.log(`Attempting to redirect to ${templateVars.single.long}...`);
- res.status(301);
- res.redirect(templateVars.single.long);
+  let currentID = req.cookies['user_id'];
+  let templateVars = { single: db.byShort(req.params.id), user: users[currentID] };
+  res.status(301);
+  res.redirect(templateVars.single.long);
 });
 
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
-  // console.log(`Request at id: ${req.params.id}`);
-  let templateVars = {single: db.byShort(req.params.id), username: req.cookies["username"] };
-  // console.log(`Requested object: ${templateVars.single.long} - ${templateVars.single.short}`);
+  let currentID = req.cookies['user_id'];
+  let templateVars = {single: db.byShort(req.params.id), user: users[currentID] };
   res.render("urls_show", templateVars);
 });
 
 // Shows all the urls in JSON format for debugging
 app.get("/urls.json", (req, res) => {
-  let templateVars = { urls: db.all(), username: req.cookies["username"] };
+  let templateVars = { urls: db.all() };
   res.json(templateVars);
+});
+
+app.get("/users.json", (req, res) => {
+  res.json(users);
+});
+
+// DEBUG: shows data of current user
+app.get("/current_user.json", (req, res) => {
+  let currentID = req.cookies["user_id"];
+  res.json(users[currentID]);
 });
 
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: db.all(), username: req.cookies["username"] };
+  let currentID = req.cookies["user_id"];
+  let templateVars = { urls: db.all(), user: users[currentID] };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
-// Root page
+// Marked for deletion !!
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>world!</b> </body></html>");
 });
 
+// Gets registration page
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 /* ---- POSTS ----- */
 
+// Post to login grabs user_id from request and returns a cookie
 app.post("/login", (req, res) => {
-  let user = req.body.username;
-  res.cookie('username', user);
-  res.redirect("/urls");
+  let loginEmail = req.body.email;
+  let loginPassword = req.body.password;
+  if (validateEmail(loginEmail) && validatePassword(loginEmail, loginPassword)) {
+    let id = findIDFromEmail(loginEmail);
+    res.cookie('user_id', id);
+    res.redirect("/urls");
+  } else {
+    res.status(400);
+    res.send("<h1>403 invalid email or password</h1>");
+  }
+  // console.log(`Email is ${loginEmail}`);
+  // let id = findIDFromEmail(loginEmail);
+  // console.log(`Id of ${loginEmail} is ${id}`);
+  // res.cookie('user_id', id);
+  // res.redirect("/urls");
 });
 
+// Post to logout deletes the user_id cookie
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
-app.post("/urls", (req, res) => { // Catches POST requests made to /urls
-  let long = validateURL(req.body.longURL); // show POST parameters
-  let short = generateRandomKey();
-  console.log(`The new url is ${long} and the key is ${short}`);
+// Post to urls index first validates URL then adds the new url and key
+app.post("/urls", (req, res) => {
+  let long = validateURL(req.body.longURL);
+  let short = generateRandomKey(6);
   db.add(long, short);
   res.redirect("/urls");
 });
 
+// Registers a new user
+app.post("/register", (req, res) => {
+  let newUserID = generateRandomKey(8);
+  let newEmail = req.body.email;
+  let newPass = req.body.password;
+  if ( newEmail && newPass) {
+    let invalid = false;
+    for (let id in users) {
+      if (users[id]['email'] == newEmail) {
+        invalid = true;
+      }
+    }
+    if(!invalid) {
+      users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
+      res.cookie('user_id', newUserID);
+      res.redirect("/urls");
+    } else {
+      res.status(400);
+      res.clearCookie("user_id");
+      res.send("<h1>400 email already registered</h1>");
+    }
+
+  } else {
+    res.status(400);
+    res.clearCookie("user_id");
+    res.send("<h1>400 no email or password</h1>");
+  }
+});
+
+// Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
   let idToDelete = db.index(req.params.id);
   db.delete(idToDelete);
@@ -87,16 +171,18 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// LISTENS
+/* ---- LISTEN TO PORT ----- */
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}...`);
 });
 
-// FUNCTIONS
-function generateRandomKey () {
+/* ---- FUNCTIONS ----- */
+
+// Generates 6 digit key
+function generateRandomKey (length) {
   let key = "";
   let cap = false;
-  for(let i = 0; i < 6; i++)
+  for(let i = 0; i < length; i++)
   {
     let digit = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
     if (cap){
@@ -109,11 +195,40 @@ function generateRandomKey () {
   return key;
 }
 
+// Ensures new and updated URLs can make valid requests
 function validateURL (string) {
   if (!string.includes("http://") && !string.includes("https://"))
   {
     return 'http://' + string;
   } else {
     return string;
+  }
+}
+
+function findIDFromEmail (email) {
+  for (let id in users) {
+    if (users[id]['email'] == email) {
+      return users[id]['id'];
+    }
+  }
+  return null;
+}
+
+function validateEmail (email) {
+    for (let id in users) {
+    if (users[id]['email'] == email) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function validatePassword (email, password) {
+  let id = findIDFromEmail(email);
+  if (users[id]['password'] == password)
+  {
+    return true;
+  } else {
+    return false;
   }
 }
