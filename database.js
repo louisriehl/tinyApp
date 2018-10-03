@@ -12,5 +12,7 @@ const db = {
 module.exports = {
   all: () => db,
   userURL: (id) => db[id],
-  add: (id, short, long) => { db[id][short] = long}
+  getOne: (id, short) => db[id][short],
+  add: (id, short, long) => { db[id][short] = long},
+  delete: (id, short) => { delete db[id][short]}
 };

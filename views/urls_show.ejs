@@ -9,9 +9,9 @@
 </header>
 
 <body>
-  <h2>Short URL: <%= single['short']%></h2>
+  <h2>Short URL: <%= short %></h2>
   <p>You can update the url of a shortened key here!</p>
-    <form method="POST" action="/urls/<%= single['short']%>">
+    <form method="POST" action="/urls/<%= short%>">
     New Url: <input type="text" name="newLong">
     <button type="submit">Update</button>
     </form>

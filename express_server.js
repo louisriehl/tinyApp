@@ -18,12 +18,12 @@ const users = {
   "15guys": {
     id: "15guys",
     email: "guy@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "15guys"
   },
  "myiddude": {
     id: "myiddude",
     email: "dude@example.com",
-    password: "dishwasher-funk"
+    password: "myiddude"
   }
 };
 
@@ -55,7 +55,8 @@ app.get("/u/:id", (req, res) => {
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
   let currentID = req.cookies['user_id'];
-  let templateVars = {single: db.byShort(req.params.id), user: users[currentID] };
+  let code = req.params.id;
+  let templateVars = {short: code, long: db.getOne(currentID, code), user: users[currentID] };
   res.render("urls_show", templateVars);
 });
 
@@ -166,16 +167,18 @@ app.post("/register", (req, res) => {
 
 // Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
-  let idToDelete = db.index(req.params.id);
-  db.delete(idToDelete);
+  let id = req.cookies['user_id'];
+  let short = req.params.id;
+  db.delete(id, short);
   console.log("Deleting...");
   res.redirect("/urls");
 });
 
 app.post("/urls/:id", (req, res) => {
-  let update = validateURL(req.body.newLong);
-  let id = db.index(req.params.id);
-  db.update(id, update);
+  let long = validateURL(req.body.newLong);
+  let short = req.params.id;
+  let id = req.cookies["user_id"];
+  db.add(id, short, long);
   res.redirect("/urls");
 });
 
