@@ -15,15 +15,15 @@ form {
 
 <body>
 
-  <% if (urls) {%>
+  <% if (urls && user) { %>
     <table>
+      <% for (let short in urls) { %>
       <tr>
-        <th>Short URL Code</th>
+        <th>URL Code</th>
         <th>Original Url</th>
         <th></th>
         <th></th>
       </tr>
-      <% for (let short in urls) { %>
         <tr>
           <td><%= short %></td>
           <td><a href="<%= urls[short] %>"><%= urls[short] %></a></td>
@@ -36,11 +36,11 @@ form {
         </tr>
         <% }; %>
     </table>
+    <form action="/urls/new"><button type="submit">Shorten a new URL!</button>
   <% } else { %>
-    <p>Sorry, you have to be logged in to view your urls!</p>
+    <p>You need to log in or register before viewing urls!</p>
   <% } %>
 
-  <form action="/urls/new"><button type="submit">Shorten another URL!</button>
 </body>
 
 </html>
