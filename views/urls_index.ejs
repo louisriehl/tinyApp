@@ -20,13 +20,13 @@
     <table align="center" style=" text-align: center; padding-top: 20px; padding-bottom: 20px;">
       <% for (let short in urls) { %>
       <tr>
-        <th>URL Code</th>
+        <th>Short URL</th>
         <th>Original Url</th>
         <th></th>
         <th></th>
       </tr>
         <tr>
-          <td><%= short %></td>
+          <td><a href="/u/<%=short%>"><%= short %></a></td>
           <td><a href="<%= urls[short] %>"><%= urls[short] %></a></td>
           <td><form action="/urls/<%= short %>"><button type="submit">Edit</button></form></td>
           <td>
