@@ -97,11 +97,20 @@ app.get("/login", (req, res) => {
 // Post to login grabs user_id from request and returns a cookie
 app.post("/login", (req, res) => {
   let loginEmail = req.body.email;
+  let loginPassword = req.body.password;
+  if (validateEmail(loginEmail) && validatePassword(loginEmail, loginPassword)) {
+    let id = findIDFromEmail(loginEmail);
+    res.cookie('user_id', id);
+    res.redirect("/urls");
+  } else {
+    res.status(400);
+    res.send("<h1>403 invalid email or password</h1>");
+  }
   // console.log(`Email is ${loginEmail}`);
-  let id = findIDFromEmail(loginEmail);
+  // let id = findIDFromEmail(loginEmail);
   // console.log(`Id of ${loginEmail} is ${id}`);
-  res.cookie('user_id', id);
-  res.redirect("/urls");
+  // res.cookie('user_id', id);
+  // res.redirect("/urls");
 });
 
 // Post to logout deletes the user_id cookie
@@ -118,6 +127,7 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls");
 });
 
+// Registers a new user
 app.post("/register", (req, res) => {
   let newUserID = generateRandomKey(8);
   let newEmail = req.body.email;
@@ -146,6 +156,7 @@ app.post("/register", (req, res) => {
   }
 });
 
+// Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
   let idToDelete = db.index(req.params.id);
   db.delete(idToDelete);
@@ -201,4 +212,23 @@ function findIDFromEmail (email) {
     }
   }
   return null;
+}
+
+function validateEmail (email) {
+    for (let id in users) {
+    if (users[id]['email'] == email) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function validatePassword (email, password) {
+  let id = findIDFromEmail(email);
+  if (users[id]['password'] == password)
+  {
+    return true;
+  } else {
+    return false;
+  }
 }
