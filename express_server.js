@@ -102,12 +102,31 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  console.log(`Registered ${req.body.email} with pass ${req.body.password}!`);
   let newUserID = generateRandomKey(8);
   let newEmail = req.body.email;
   let newPass = req.body.password;
-  users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
-  res.redirect("/urls");
+  if ( newEmail && newPass) {
+    let invalid = false;
+    for (let id in users) {
+      if (users[id]['email'] == newEmail) {
+        invalid = true;
+      }
+    }
+    if(!invalid) {
+      users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
+      res.cookie('username', newUserID);
+      res.redirect("/urls");
+    } else {
+      res.status(400);
+      res.clearCookie("username");
+      res.send("<h1>400 email already registered</h1>");
+    }
+
+  } else {
+    res.status(400);
+    res.clearCookie("username");
+    res.send("<h1>400 no username or password</h1>");
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
