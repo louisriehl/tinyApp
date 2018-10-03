@@ -58,6 +58,10 @@ app.get("/urls.json", (req, res) => {
   res.json(templateVars);
 });
 
+app.get("/users.json", (req, res) => {
+  res.json(users);
+});
+
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
   let templateVars = { urls: db.all(), username: req.cookies["username"] };
@@ -99,6 +103,10 @@ app.post("/urls", (req, res) => {
 
 app.post("/register", (req, res) => {
   console.log(`Registered ${req.body.email} with pass ${req.body.password}!`);
+  let newUserID = generateRandomKey(8);
+  let newEmail = req.body.email;
+  let newPass = req.body.password;
+  users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
   res.redirect("/urls");
 });
 
