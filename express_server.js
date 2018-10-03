@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); //allows us to access POST request parameters
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080; //default port
 
@@ -15,16 +16,10 @@ app.use(cookieParser());
 // Relocate this later to be more modular...
 
 const users = {
-  "15guys": {
-    id: "15guys",
-    email: "guy@example.com",
-    password: "15guys"
-  },
- "myiddude": {
-    id: "myiddude",
-    email: "dude@example.com",
-    password: "myiddude"
-  }
+  zPoPpHxQ: {
+    id: "zPoPpHxQ",
+    email: "myemail@mail.com",
+    password: "$2b$10$kGu1gNQxZRwSD.K/9PiKHuKakCoowSBgMkaaPDUagLQR0VAEpLe7u"}
 };
 
 /* --- GETS --- */
@@ -144,7 +139,7 @@ app.post("/urls", (req, res) => {
 app.post("/register", (req, res) => {
   let newUserID = generateRandomKey(8);
   let newEmail = req.body.email;
-  let newPass = req.body.password;
+  let newPass = bcrypt.hashSync(req.body.password, 10);
   if ( newEmail && newPass) {
     let invalid = false;
     for (let id in users) {
@@ -154,17 +149,18 @@ app.post("/register", (req, res) => {
     }
     if(!invalid) {
       users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
+      db.newUser(newUserID);
       res.cookie('user_id', newUserID);
       res.redirect("/urls");
     } else {
       res.status(400);
-      res.clearCookie("user_id");
+      // res.clearCookie("user_id");
       res.send("<h1>400 email already registered</h1>");
     }
 
   } else {
     res.status(400);
-    res.clearCookie("user_id");
+    // res.clearCookie("user_id");
     res.send("<h1>400 no email or password</h1>");
   }
 });
@@ -236,7 +232,7 @@ function findIDFromEmail (email) {
 }
 
 function validateEmail (email) {
-    for (let id in users) {
+  for (let id in users) {
     if (users[id]['email'] == email) {
       return true;
     }
@@ -246,7 +242,7 @@ function validateEmail (email) {
 
 function validatePassword (email, password) {
   let id = findIDFromEmail(email);
-  if (users[id]['password'] == password)
+  if (bcrypt.compareSync(password, users[id]['password']))
   {
     return true;
   } else {
