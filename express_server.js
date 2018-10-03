@@ -80,6 +80,11 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/register", (req, res) => {
+  console.log(`Registered ${req.body.email} with pass ${req.body.password}!`);
+  res.redirect("/urls");
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   let idToDelete = db.index(req.params.id);
   db.delete(idToDelete);
