@@ -80,7 +80,7 @@ app.get("/current_user.json", (req, res) => {
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
   let currentID = req.cookies["user_id"];
-  let templateVars = { urls: db.all(), user: users[currentID] };
+  let templateVars = { urls: db.userURL(currentID), user: users[currentID] };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
@@ -129,7 +129,9 @@ app.post("/logout", (req, res) => {
 app.post("/urls", (req, res) => {
   let long = validateURL(req.body.longURL);
   let short = generateRandomKey(6);
-  db.add(long, short);
+  let id = req.cookies["user_id"];
+  console.log(`long url: ${long} short key: ${short} id of user: ${id}`);
+  db.add(id, short, long);
   res.redirect("/urls");
 });
 

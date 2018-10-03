@@ -15,7 +15,7 @@ form {
 
 <body>
 
-  <% if (urls[0]) {%>
+  <% if (urls) {%>
     <table>
       <tr>
         <th>Short URL Code</th>
@@ -23,13 +23,13 @@ form {
         <th></th>
         <th></th>
       </tr>
-      <% for (let red in urls) { %>
+      <% for (let short in urls) { %>
         <tr>
-          <td><%= urls[red]['short'] %></td>
-          <td><a href="<%= urls[red]['long'] %>"><%= urls[red]['long'] %></a></td>
-          <td><form action="/urls/<%= urls[red]['short']%>"><button type="submit">Edit</button></form></td>
+          <td><%= short %></td>
+          <td><a href="<%= urls[short] %>"><%= urls[short] %></a></td>
+          <td><form action="/urls/<%= short %>"><button type="submit">Edit</button></form></td>
           <td>
-            <form method="POST" action="/urls/<%= urls[red]['short'] %>/delete">
+            <form method="POST" action="/urls/<%= short %>/delete">
               <button type="delete">Remove</button>
             </form>
           </td>
