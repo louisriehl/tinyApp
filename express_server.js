@@ -54,10 +54,17 @@ app.get("/u/:id", (req, res) => {
 
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
+  let ownerID = db.owner(req.params.id);
   let currentID = req.cookies['user_id'];
   let code = req.params.id;
-  let templateVars = {short: code, long: db.getOne(currentID, code), user: users[currentID] };
-  res.render("urls_show", templateVars);
+  if (ownerID == currentID)
+  {
+    let templateVars = {short: code, long: db.getOne(currentID, code), user: users[currentID] };
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(401);
+    res.send("<h1>401: Not Authorized</h2>");
+  }
 });
 
 // Shows all the urls in JSON format for debugging
@@ -81,7 +88,7 @@ app.get("/current_user.json", (req, res) => {
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
   let currentID = req.cookies["user_id"];
-  let templateVars = { urls: db.userURL(currentID), user: users[currentID] };
+  let templateVars = { urls: db.userURL(currentID), user: users[currentID] || null };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
@@ -113,11 +120,6 @@ app.post("/login", (req, res) => {
     res.status(400);
     res.send("<h1>403 invalid email or password</h1>");
   }
-  // console.log(`Email is ${loginEmail}`);
-  // let id = findIDFromEmail(loginEmail);
-  // console.log(`Id of ${loginEmail} is ${id}`);
-  // res.cookie('user_id', id);
-  // res.redirect("/urls");
 });
 
 // Post to logout deletes the user_id cookie
@@ -167,11 +169,17 @@ app.post("/register", (req, res) => {
 
 // Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
-  let id = req.cookies['user_id'];
+  let ownerID = db.owner(req.params.id);
+  let currentID = req.cookies['user_id'];
   let short = req.params.id;
-  db.delete(id, short);
-  console.log("Deleting...");
-  res.redirect("/urls");
+  if (ownerID == currentID) {
+    db.delete(currentID, short);
+    console.log("Deleting...");
+    res.redirect("/urls");
+  } else {
+    res.status(401);
+    res.send("<h1>401: Not Authorized");
+  }
 });
 
 app.post("/urls/:id", (req, res) => {

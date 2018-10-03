@@ -14,5 +14,16 @@ module.exports = {
   userURL: (id) => db[id],
   getOne: (id, short) => db[id][short],
   add: (id, short, long) => { db[id][short] = long},
-  delete: (id, short) => { delete db[id][short]}
+  delete: (id, short) => { delete db[id][short]},
+  owner: (short) => {
+    for (let thing in db) {
+      // console.log(db[thing]);
+      for (let tag in db[thing]) {
+        if (tag == short) {
+          return thing;
+        }
+      }
+    }
+    return null;
+  }
 };
