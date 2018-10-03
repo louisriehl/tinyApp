@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lange="en">
+<html lang="en">
+
 <head>
   <title>TinyApp</title>
 </head>
+
 <style>
-form {
-    display: inline-block; //Or display: inline;
-}
+  form {
+      display: inline-block; //Or display: inline;
+  }
 </style>
 
 <header>
   <% include ./partials/_header %>
 </header>
 
-<body>
-
+<body style=" text-align: center; padding-top: 50px;">
   <% if (urls && user) { %>
-    <table>
+    <table align="center" style=" text-align: center; padding-top: 20px; padding-bottom: 20px;">
       <% for (let short in urls) { %>
       <tr>
         <th>URL Code</th>
@@ -40,7 +41,6 @@ form {
   <% } else { %>
     <p>You need to log in or register before viewing urls!</p>
   <% } %>
-
 </body>
 
 </html>

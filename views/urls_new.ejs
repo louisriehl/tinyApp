@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
 
-  </head>
-  <header>
-    <% include ./partials/_header %>
-  </header>
+<head>
+  <title>TinyApp</title>
+</head>
 
-  <body style="font-size:20px; padding:50px;">
-      <form action="/urls" method="POST" style="margin:150px;">
-        <label for="longURL">Enter a URL to shrink it!</label>
-        <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-        <input type="submit" value="Submit">
-      </form>
-  </body>
+<header>
+  <% include ./partials/_header %>
+</header>
 
+<body style="font-size:20px; padding:50px; text-align: center;">
+    <form action="/urls" method="POST" style="padding-top: 30px;">
+      <label for="longURL">Enter a URL to shrink it!</label>
+      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+      <input type="submit" value="Submit">
+    </form>
+</body>
 
 </html>

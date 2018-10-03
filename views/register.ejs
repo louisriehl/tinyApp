@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
 
-  </head>
+<head>
+  <title>TinyApp</title>
+</head>
 
-  <body style="font-size:20px; padding:50px;">
-    <p>This is the registration page...</p>
-    <form method="POST" action="/register">
-      Email: <input type="email" name="email">
-      Password: <input type="password" name="password">
-      <button type="submit">Create Account</button>
-    </form>
-  </body>
+<style>
+  form {
+    display: inline-block; //Or display: inline;
+  }
+</style>
+
+<body style="font-size:20px; padding:50px; text-align: center;">
+  <h2>Welcome to TinyApp!</h2>
+  <p>Don't have an account? Let's get you set up!</p>
+  <form method="POST" action="/register">
+    Email: <input type="email" name="email">
+    Password: <input type="password" name="password">
+    <button type="submit">Create Account</button>
+  </form>
+</body>
+
 </html>

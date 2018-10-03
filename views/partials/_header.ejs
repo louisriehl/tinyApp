@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <header>
   <h1>TinyApp</h1>
   <% if (user == undefined) {%>
@@ -10,10 +11,11 @@
     <button type="submit">Register</button>
   </form>
   <% } else { %>
-  <p><%= user.id %> -- Logged In</p>
+  <p><%= user.email %></p>
   <form method="POST" action="/logout">
   <button type="submit">Logout</button>
   </form>
   <% } %>
 </header>
+
 </html>

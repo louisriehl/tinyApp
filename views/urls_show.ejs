@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html lange="en">
+<html lang="en">
+
 <head>
   <title>TinyApp</title>
 </head>
+
+<style>
+  form  {
+    margin: 20px;
+  }
+</style>
 
 <header>
   <% include ./partials/_header %>
 </header>
 
-<body>
+<body style=" text-align: center;">
   <h2>Short URL: <%= short %></h2>
   <p>You can update the url of a shortened key here!</p>
     <form method="POST" action="/urls/<%= short%>">

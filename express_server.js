@@ -1,12 +1,12 @@
+/* --- DEPENDENCIES -- */
 const express = require('express');
 const cookieSession = require('cookie-session');
-const bodyParser = require('body-parser'); //allows us to access POST request parameters
+const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080; //default port
 
-const db = require("./database");
-
+/* --- EXPRESS CONFIG ---*/
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -14,9 +14,10 @@ app.use(cookieSession({
   keys: ["chocolatechip", "doublefudge", "snickerdoodle"]
 }));
 
-/* --- OBJECTS --- */
+/* --- MODULES ---*/
+const db = require("./database");
 
-// Relocate this later to be more modular...
+/* --- OBJECTS --- */
 
 const users = {
   zPoPpHxQ: {
@@ -25,11 +26,15 @@ const users = {
     password: "$2b$10$kGu1gNQxZRwSD.K/9PiKHuKakCoowSBgMkaaPDUagLQR0VAEpLe7u"}
 };
 
-/* --- GETS --- */
+/* --- GET REQUESTS --- */
 
-// Fetch the root page
+// Redirect from root page
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if(req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("login");
+  }
 });
 
 // Fetch the new url page
@@ -46,8 +51,12 @@ app.get("/urls/new", (req, res) => {
 app.get("/u/:id", (req, res) => {
   let short = req.params.id;
   let id = db.owner(short);
+  if (!id) {
+    res.status(404);
+    res.send("<h1>404: Not Found</h1>");
+    res.end();
+  }
   let destination = db.getOne(id, short);
-  console.log(`short code: ${short}, id of owner is ${id}, target is: ${destination}`);
   res.status(301);
   res.redirect(destination);
 });
@@ -55,6 +64,11 @@ app.get("/u/:id", (req, res) => {
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
   let ownerID = db.owner(req.params.id);
+  if (!ownerID) {
+    res.status(404);
+    res.send("<h1>404: Not Found</h2>");
+    res.end();
+  }
   let currentID = req.session.user_id;
   let code = req.params.id;
   if (ownerID == currentID)
@@ -67,46 +81,35 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-// Shows all the urls in JSON format for debugging
-app.get("/urls.json", (req, res) => {
-  let templateVars = { urls: db.all() };
-  res.json(templateVars);
-});
-
-app.get("/users.json", (req, res) => {
-  res.json(users);
-});
-
-// DEBUG: shows data of current user
-app.get("/current_user.json", (req, res) => {
-  let currentID = req.session.user_id;
-  let usersURLs = db.userURL(currentID);
-  let templateVars = { user: users[currentID], urls: usersURLs};
-  res.json(templateVars);
-});
-
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
-  let currentID = req.session.user_id;
-  let templateVars = { urls: db.userURL(currentID), user: users[currentID] || null };
-  res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
+  if (req.session.user_id) {
+    let currentID = req.session.user_id;
+    let templateVars = { urls: db.userURL(currentID), user: users[currentID] || null };
+    res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
+  } else {
+    res.status(401);
+    res.send("<h1>401: Not Authorized</h1><br><p>Oops! You need to be logged in to see your urls!");
+  }
 });
 
-// Marked for deletion !!
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>world!</b> </body></html>");
-});
-
-// Gets registration page
+// Gets registration page, redirect if user is logged in
 app.get("/register", (req, res) => {
+  if(req.session.user_id) {
+  res.redirect("/urls").end();
+  }
   res.render("register");
 });
 
+// Gets login page, redirect if user is logged in
 app.get("/login", (req, res) => {
+  if(req.session.user_id) {
+    res.redirect("/urls").end();
+  }
   res.render("login");
 });
 
-/* ---- POSTS ----- */
+/* ---- POST REQUESTS ----- */
 
 // Post to login grabs user_id from request and returns a cookie
 app.post("/login", (req, res) => {
@@ -118,24 +121,29 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     res.status(400);
-    res.send("<h1>403 invalid email or password</h1>");
+    res.send("<h1>403: Invalid email or password</h1>");
   }
 });
 
 // Post to logout deletes the user_id cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("session");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Post to urls index first validates URL then adds the new url and key
 app.post("/urls", (req, res) => {
-  let long = validateURL(req.body.longURL);
-  let short = generateRandomKey(6);
-  let id = req.session.user_id;
-  console.log(`long url: ${long} short key: ${short} id of user: ${id}`);
-  db.add(id, short, long);
-  res.redirect("/urls");
+  if (!req.session.user_id)
+  {
+    res.status(401);
+    res.send("<h1>401: Not Authorized").end();
+  } else {
+    let long = validateURL(req.body.longURL);
+    let short = generateRandomKey(6);
+    let id = req.session.user_id;
+    db.add(id, short, long);
+    res.redirect("/urls");
+  }
 });
 
 // Registers a new user
@@ -170,25 +178,33 @@ app.post("/register", (req, res) => {
 
 // Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
-  let ownerID = db.owner(req.params.id);
-  let currentID = req.session.user_id;
-  let short = req.params.id;
-  if (ownerID == currentID) {
-    db.delete(currentID, short);
-    console.log("Deleting...");
-    res.redirect("/urls");
+  if(!req.session.user_id) {
+    res.status(401).send("<h1>401: Not Authorized").end();
   } else {
-    res.status(401);
-    res.send("<h1>401: Not Authorized");
+    let ownerID = db.owner(req.params.id);
+    let currentID = req.session.user_id;
+    let short = req.params.id;
+    if (ownerID == currentID) {
+      db.delete(currentID, short);
+      res.redirect("/urls");
+    } else {
+      res.status(401);
+      res.send("<h1>401: Not Authorized");
+    }
   }
 });
 
+// Updates a given URL
 app.post("/urls/:id", (req, res) => {
-  let long = validateURL(req.body.newLong);
-  let short = req.params.id;
-  let id = req.session.user_id;
-  db.add(id, short, long);
-  res.redirect("/urls");
+  if (!req.session.user_id || req.session.user_id != db.owner(req.params.id)) {
+    res.status(401).send("<h1>401: Not Authorized").end();
+  } else {
+    let long = validateURL(req.body.newLong);
+    let short = req.params.id;
+    let id = req.session.user_id;
+    db.add(id, short, long);
+    res.redirect("/urls");
+  }
 });
 
 /* ---- LISTEN TO PORT ----- */
@@ -198,7 +214,7 @@ app.listen(PORT, () => {
 
 /* ---- FUNCTIONS ----- */
 
-// Generates 6 digit key
+// Generates key of given length
 function generateRandomKey (length) {
   let key = "";
   let cap = false;
@@ -225,6 +241,7 @@ function validateURL (string) {
   }
 }
 
+// Returns userID from their email address
 function findIDFromEmail (email) {
   for (let id in users) {
     if (users[id]['email'] == email) {
@@ -233,7 +250,7 @@ function findIDFromEmail (email) {
   }
   return null;
 }
-
+// Checks validity of email address
 function validateEmail (email) {
   for (let id in users) {
     if (users[id]['email'] == email) {
@@ -242,7 +259,7 @@ function validateEmail (email) {
   }
   return false;
 }
-
+// Checks that email and password match correctly
 function validatePassword (email, password) {
   let id = findIDFromEmail(email);
   if (bcrypt.compareSync(password, users[id]['password']))
