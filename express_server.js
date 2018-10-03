@@ -11,10 +11,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 /* --- GETS --- */
+
+// Fetch the root page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+// Fetch the new url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new", {username: req.cookies["username"]});
 });
@@ -22,16 +25,13 @@ app.get("/urls/new", (req, res) => {
 // Handler that redirects based on a given id parameter
 app.get("/u/:id", (req, res) => {
  let templateVars = { single: db.byShort(req.params.id), username: req.cookies["username"] };
- // console.log(`Attempting to redirect to ${templateVars.single.long}...`);
  res.status(301);
  res.redirect(templateVars.single.long);
 });
 
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
-  // console.log(`Request at id: ${req.params.id}`);
   let templateVars = {single: db.byShort(req.params.id), username: req.cookies["username"] };
-  // console.log(`Requested object: ${templateVars.single.long} - ${templateVars.single.short}`);
   res.render("urls_show", templateVars);
 });
 
@@ -47,28 +47,35 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
 
-// Root page
+// Marked for deletion !!
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>world!</b> </body></html>");
 });
 
+// Gets registration page
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 /* ---- POSTS ----- */
 
+// Post to login grabs username from request and returns a cookie
 app.post("/login", (req, res) => {
   let user = req.body.username;
   res.cookie('username', user);
   res.redirect("/urls");
 });
 
+// Post to logout deletes the username cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
 });
 
-app.post("/urls", (req, res) => { // Catches POST requests made to /urls
-  let long = validateURL(req.body.longURL); // show POST parameters
+// Post to urls index first validates URL then adds the new url and key
+app.post("/urls", (req, res) => {
+  let long = validateURL(req.body.longURL);
   let short = generateRandomKey();
-  console.log(`The new url is ${long} and the key is ${short}`);
   db.add(long, short);
   res.redirect("/urls");
 });
@@ -87,12 +94,14 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// LISTENS
+/* ---- LISTEN TO PORT ----- */
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}...`);
 });
 
-// FUNCTIONS
+/* ---- FUNCTIONS ----- */
+
+// Generates 6 digit key
 function generateRandomKey () {
   let key = "";
   let cap = false;
@@ -109,6 +118,7 @@ function generateRandomKey () {
   return key;
 }
 
+// Ensures new and updated URLs can make valid requests
 function validateURL (string) {
   if (!string.includes("http://") && !string.includes("https://"))
   {
