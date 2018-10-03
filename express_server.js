@@ -1,5 +1,5 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bodyParser = require('body-parser'); //allows us to access POST request parameters
 const bcrypt = require('bcrypt');
 const app = express();
@@ -9,7 +9,10 @@ const db = require("./database");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: "session",
+  keys: ["chocolatechip", "doublefudge", "snickerdoodle"]
+}));
 
 /* --- OBJECTS --- */
 
@@ -31,10 +34,10 @@ app.get("/", (req, res) => {
 
 // Fetch the new url page
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies["user_id"]) {
+  if (!req.session.user_id) {
     res.redirect("/login");
   } else {
-  let currentID = req.cookies["user_id"];
+  let currentID = req.session.user_id;
   res.render("urls_new", {user: users[currentID]});
   }
 });
@@ -52,7 +55,7 @@ app.get("/u/:id", (req, res) => {
 // Show the urls_show page of a specific shortened URL
 app.get("/urls/:id", (req, res) => {
   let ownerID = db.owner(req.params.id);
-  let currentID = req.cookies['user_id'];
+  let currentID = req.session.user_id;
   let code = req.params.id;
   if (ownerID == currentID)
   {
@@ -76,7 +79,7 @@ app.get("/users.json", (req, res) => {
 
 // DEBUG: shows data of current user
 app.get("/current_user.json", (req, res) => {
-  let currentID = req.cookies["user_id"];
+  let currentID = req.session.user_id;
   let usersURLs = db.userURL(currentID);
   let templateVars = { user: users[currentID], urls: usersURLs};
   res.json(templateVars);
@@ -84,7 +87,7 @@ app.get("/current_user.json", (req, res) => {
 
 // Passes all urls before loading url index
 app.get("/urls", (req, res) => {
-  let currentID = req.cookies["user_id"];
+  let currentID = req.session.user_id;
   let templateVars = { urls: db.userURL(currentID), user: users[currentID] || null };
   res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
 });
@@ -111,7 +114,7 @@ app.post("/login", (req, res) => {
   let loginPassword = req.body.password;
   if (validateEmail(loginEmail) && validatePassword(loginEmail, loginPassword)) {
     let id = findIDFromEmail(loginEmail);
-    res.cookie('user_id', id);
+    req.session.user_id = id;
     res.redirect("/urls");
   } else {
     res.status(400);
@@ -121,7 +124,7 @@ app.post("/login", (req, res) => {
 
 // Post to logout deletes the user_id cookie
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.clearCookie("session");
   res.redirect("/urls");
 });
 
@@ -129,7 +132,7 @@ app.post("/logout", (req, res) => {
 app.post("/urls", (req, res) => {
   let long = validateURL(req.body.longURL);
   let short = generateRandomKey(6);
-  let id = req.cookies["user_id"];
+  let id = req.session.user_id;
   console.log(`long url: ${long} short key: ${short} id of user: ${id}`);
   db.add(id, short, long);
   res.redirect("/urls");
@@ -150,7 +153,7 @@ app.post("/register", (req, res) => {
     if(!invalid) {
       users[newUserID] = {id: newUserID, email: newEmail, password: newPass};
       db.newUser(newUserID);
-      res.cookie('user_id', newUserID);
+      req.session.user_id = newUserID;
       res.redirect("/urls");
     } else {
       res.status(400);
@@ -168,7 +171,7 @@ app.post("/register", (req, res) => {
 // Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
   let ownerID = db.owner(req.params.id);
-  let currentID = req.cookies['user_id'];
+  let currentID = req.session.user_id;
   let short = req.params.id;
   if (ownerID == currentID) {
     db.delete(currentID, short);
@@ -183,7 +186,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let long = validateURL(req.body.newLong);
   let short = req.params.id;
-  let id = req.cookies["user_id"];
+  let id = req.session.user_id;
   db.add(id, short, long);
   res.redirect("/urls");
 });
