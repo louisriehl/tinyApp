@@ -73,7 +73,9 @@ app.get("/urls/:id", (req, res) => {
   let code = req.params.id;
   if (ownerID == currentID)
   {
-    let templateVars = {short: code, long: db.getOne(currentID, code), user: users[currentID] };
+    let templateVars = {short: code, long: db.getOne(currentID, code),
+      user: users[currentID],
+      date: db.getDate(currentID, code) };
     res.render("urls_show", templateVars);
   } else {
     res.status(401);
