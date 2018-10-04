@@ -85,7 +85,7 @@ app.get("/urls/:id", (req, res) => {
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
     let currentID = req.session.user_id;
-    let templateVars = { urls: db.userURL(currentID), user: users[currentID] || null };
+    let templateVars = { urls: db.userURLs(currentID), user: users[currentID] || null };
     res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
   } else {
     res.status(401);
@@ -128,6 +128,7 @@ app.post("/login", (req, res) => {
 // Post to logout deletes the user_id cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("session");
+  res.clearCookie("session.sig");
   res.redirect("/login");
 });
 
@@ -141,7 +142,8 @@ app.post("/urls", (req, res) => {
     let long = validateURL(req.body.longURL);
     let short = generateRandomKey(6);
     let id = req.session.user_id;
-    db.add(id, short, long);
+    let date = dateParser();
+    db.add(id, short, long, date);
     res.redirect("/urls");
   }
 });
@@ -199,10 +201,11 @@ app.post("/urls/:id", (req, res) => {
   if (!req.session.user_id || req.session.user_id != db.owner(req.params.id)) {
     res.status(401).send("<h1>401: Not Authorized").end();
   } else {
+    let date = dateParser();
     let long = validateURL(req.body.newLong);
     let short = req.params.id;
     let id = req.session.user_id;
-    db.add(id, short, long);
+    db.add(id, short, long, date);
     res.redirect("/urls");
   }
 });
@@ -268,4 +271,9 @@ function validatePassword (email, password) {
   } else {
     return false;
   }
+}
+
+function dateParser () {
+  let date = new Date();
+  return date.toString().split(" ").slice(0,4).join(" ");
 }
