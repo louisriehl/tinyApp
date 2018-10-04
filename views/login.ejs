@@ -6,23 +6,22 @@
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 
-<style>
-  form {
-    margin: 20px;
-  }
-</style>
-
-<body style="font-size:20px; text-align:center; padding-top: 50px;">
-  <h2>Welcome back to TinyApp!</h2>
-  <p>Let's log you in...</p>
-  <form method="POST" action="/login">
-    Email: <input type="email" name="email">
-    Password: <input type="password" name="password">
-    <button type="submit">Login</button>
-  </form>
-  <form method="GET" action="/register">
-    <button type="submit">Don't have an account?</button>
-  </form>
+<body style="font-size:20px; padding:50px; align-items: center; text-align: center;">
+  <div class="jumbotron">
+  <h1>Welcome back to TinyApp!</h1>
+  <h6 class="text-muted">Let's log you in</h6>
+  <div class="form-group" style=" display: block; text-align: center;">
+    <form method="POST" action="/login" style=" margin: auto; display: inline-block; width: 50%">
+      <label for="formGroupExampleInput" style="margin-top: 10px;">Email</label>
+      <input type="email" name="email" class="form-control" id="formGroupExampleInput" style=" width: 100%;">
+      <label for="formGroupExampleInput2" style="margin-top: 10px;">Password</label>
+      <input type="password" name="password" class="form-control" id="formGroupExampleInput2" style=" width: 100%;">
+      <button type="submit" class="btn btn-success btn-block" style=" margin-top: 20px;">Login</button>
+    </form>
+    <form method="GET" action="/register" style=" margin: auto; display: inline-block; width: 50%">
+      <button type="submit" class="btn btn-info btn-block" style=" margin-top: 20px;">Don't have an account?</button>
+    </form>
+  </div>
 </body>
 
 </html>

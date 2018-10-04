@@ -16,11 +16,10 @@
   <% include ./partials/_header %>
 </header>
 
-<body style=" text-align: center; padding-top: 50px;">
+<body style=" text-align: center;">
   <!-- Generate a table of the user's URLs IF they're logged in! -->
   <% if (urls && user) { %>
-    <table align="center" style=" text-align: center; padding-top: 20px; padding-bottom: 20px;">
-      <% for (let short in urls) { %>
+    <table class="table" align="center" style=" text-align: center; padding-top: 20px; padding-bottom: 20px;">
       <tr>
         <th>Short URL</th>
         <th>Original Url</th>
@@ -30,6 +29,7 @@
         <th></th>
         <th></th>
       </tr>
+      <% for (let short in urls) { %>
         <tr>
           <td><a href="/u/<%=short%>"><%= short %></a></td>
           <td><a href="<%= urls[short]["long"] %>"><%= urls[short]["long"] %></a></td>

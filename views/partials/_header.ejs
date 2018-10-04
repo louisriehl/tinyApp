@@ -5,20 +5,23 @@
 </head>
 
 <header>
-  <h1>TinyApp</h1>
+  <nav class="navbar">
+  <h1 class="navbar-brand navbar-expand-lg">TinyApp</h1>
+  <div id="navbarSupportedContent">
   <% if (user == undefined) {%>
   <form method="GET" action="/login">
-    <button type="submit">Login</button>
+    <button type="submit" class="btn btn-outline-success">Login</button>
   </form>
   <form method="GET" action="/register">
-    <button type="submit">Register</button>
+    <button type="submit" class="btn btn-outline-info">Register</button>
   </form>
   <% } else { %>
-  <p><%= user.email %></p>
-  <form method="POST" action="/logout">
-  <button type="submit">Logout</button>
+  <p class="text-muted"><%= user.email %></p>
+  <form method="POST" action="/logout" style=" display: inline-block; vertical-align: middle;">
+  <button type="submit" class="btn btn-outline-danger">Logout</button>
   </form>
   <% } %>
+</nav>
 </header>
 
 </html>

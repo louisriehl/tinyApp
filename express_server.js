@@ -183,7 +183,8 @@ app.post("/register", (req, res) => {
 
   } else {
     let errorVars = { code: 400, message: "No email or password!"};
-    res.render("error_page", errorVars).status(errorVars.code);
+    res.status(errorVars.code);
+    res.render("error_page", errorVars);
   }
 });
 
