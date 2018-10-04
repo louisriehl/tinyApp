@@ -6,26 +6,37 @@
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 
-<style>
-  form  {
-    margin: 20px;
-  }
-</style>
-
 <header>
   <% include ./partials/_header %>
 </header>
 
-<body style=" text-align: center;">
-  <h2>Short URL: <%= short %></h2>
-  <h4>Made on: <%= date %></h4>
-  <h4>Visited <%= visits %> times by <%= unique %> visitors!</h4>
-  <p>You can update the url of a shortened key here!</p>
-    <form method="POST" action="/urls/<%= short%>">
-    New Url: <input type="text" name="newLong">
-    <button type="submit">Update</button>
+<body style=" display: block; text-align: center;">
+  <div class="card" style=" padding-bottom: 20px;">
+    <table class="table" align="center" style=" text-align: center; padding-top: 20px; padding-bottom: 20px;">
+      <thead class="thead-dark">
+        <tr>
+        <th>URL Code</th>
+        <th>Made On</th>
+        <th>Total Visits</th>
+        <th>Unique Visitors</th>
+       </tr>
+       <tr>
+        <td><%= short %></td>
+        <td><%= date %></td>
+        <td><%= visits %></td>
+        <td><%= unique %></td>
+      </tr>
+      </thead>
+    </table>
+    <form method="POST" action="/urls/<%= short%>" style=" display: inline-block; margin:auto; width: 50%;">
+      <div class="form-group">
+      <label for="newLong" style="margin-top: 10px;">Update URL</label>
+      <input id="newLong" type="text" name="newLong" class="form-control" style=" width: 100%;">
+      <button class="btn btn-info btn-block" type="submit" style="margin-top: 20px;">Update</button>
+    </div>
     </form>
-    <form action="/urls"><button type="submit">Cancel</button></form>
+    <form action="/urls"><button class="btn btn-outline-warning" type="submit">Cancel</button></form>
+  </div>
 </body>
 
 </html>
