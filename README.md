@@ -1,6 +1,11 @@
 # TinyApp Project
 A simple node server that allows users to register for an account and shorten long urls into short ones. Each registered user is only allowed to modify their URLs, but your shortened URLs are available for anyone!
 
+## Overview
+
+!["View all your shortened urls in one place!"](https://github.com/louisriehl/tinyApp/blob/master/views/media/homepage.png?raw=true)
+!["View the stats of your URL for analytics, and edit the link it goes to!"](https://github.com/louisriehl/tinyApp/blob/master/views/media/editpage.png?raw=true)
+
 ## Learning Outcomes
 - How to handle requests using Express
 - How to integrate javascript into html with EJS
