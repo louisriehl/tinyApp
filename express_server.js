@@ -62,7 +62,6 @@ app.get("/u/:id", (req, res) => {
   if (!req.cookies[short]) {
     res.cookie(short, true);
     db.addUnique(id, req.params.id);
-    console.log(res.cookies);
   }
   let destination = db.getOne(id, short);
   res.status(301);
@@ -152,7 +151,7 @@ app.post("/urls", (req, res) => {
     res.render("error_page", errorVars).status(errorVars.code);
   } else {
     let long = validateURL(req.body.longURL);
-    let short = generateRandomKey(6);
+    let short = generateRandomKey(8);
     let id = req.session.user_id;
     let date = dateParser();
     db.add(id, short, long, date);
@@ -162,7 +161,7 @@ app.post("/urls", (req, res) => {
 
 // Registers a new user
 app.post("/register", (req, res) => {
-  let newUserID = generateRandomKey(8);
+  let newUserID = generateRandomKey(6);
   let newEmail = req.body.email;
   let newPass = bcrypt.hashSync(req.body.password, 10);
   if ( newEmail && newPass) {

@@ -3,7 +3,7 @@
 
 <head>
   <title>TinyApp</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 
 <style>
@@ -36,16 +36,16 @@
           <td><%= urls[short]["date"]%></td>
           <td><%= urls[short]["visits"]%></td>
           <td><%= urls[short]["unique"]%></td>
-          <td><form action="/urls/<%= short %>"><button type="submit">Edit</button></form></td>
+          <td><form action="/urls/<%= short %>"><button type="submit" class="btn-primary">Edit</button></form></td>
           <td>
             <form method="POST" action="/urls/<%= short %>/delete">
-              <button type="delete">Remove</button>
+              <button type="delete" class="btn-danger">Remove</button>
             </form>
           </td>
         </tr>
         <% }; %>
     </table>
-    <form action="/urls/new"><button type="submit">Shorten a new URL!</button>
+    <form action="/urls/new"><button type="submit" class="btn-success">Shorten a new URL!</button>
   <% } else { %>
     <p>You need to log in or register before viewing urls!</p>
   <% } %>
