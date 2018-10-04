@@ -1,6 +1,7 @@
 /* --- DEPENDENCIES -- */
 const express = require('express');
 const cookieSession = require('cookie-session');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const app = express();
@@ -9,6 +10,8 @@ const PORT = 8080; //default port
 /* --- EXPRESS CONFIG ---*/
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static("views/media"));
+app.use(cookieParser());
 app.use(cookieSession({
   name: "session",
   keys: ["chocolatechip", "doublefudge", "snickerdoodle"]
@@ -55,6 +58,7 @@ app.get("/u/:id", (req, res) => {
     let errorVars = { code: 404, message: "Not Found!"};
     res.render("error_page", errorVars).status(errorVars.code);
   }
+  db.addVisit(id, short);
   let destination = db.getOne(id, short);
   res.status(301);
   res.redirect(destination);
@@ -68,12 +72,14 @@ app.get("/urls/:id", (req, res) => {
     res.render("error_page", errorVars).status(errorVars.code);
   }
   let currentID = req.session.user_id;
-  let code = req.params.id;
+  let shortURL = req.params.id;
   if (ownerID == currentID)
   {
-    let templateVars = {short: code, long: db.getOne(currentID, code),
+    let templateVars = {short: shortURL,
+      long: db.getOne(currentID, shortURL),
       user: users[currentID],
-      date: db.getDate(currentID, code) };
+      date: db.getDate(currentID, shortURL),
+      visits: db.getVisits(currentID, shortURL)};
     res.render("urls_show", templateVars);
   } else {
     let errorVars = { code: 404, message: "Not Found!"};
