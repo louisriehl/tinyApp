@@ -52,9 +52,8 @@ app.get("/u/:id", (req, res) => {
   let short = req.params.id;
   let id = db.owner(short);
   if (!id) {
-    res.status(404);
-    res.send("<h1>404: Not Found</h1>");
-    res.end();
+    let errorVars = { code: 404, message: "Not Found!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   }
   let destination = db.getOne(id, short);
   res.status(301);
@@ -65,9 +64,8 @@ app.get("/u/:id", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let ownerID = db.owner(req.params.id);
   if (!ownerID) {
-    res.status(404);
-    res.send("<h1>404: Not Found</h2>");
-    res.end();
+    let errorVars = { code: 404, message: "Not Found!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   }
   let currentID = req.session.user_id;
   let code = req.params.id;
@@ -78,8 +76,8 @@ app.get("/urls/:id", (req, res) => {
       date: db.getDate(currentID, code) };
     res.render("urls_show", templateVars);
   } else {
-    res.status(401);
-    res.send("<h1>401: Not Authorized</h2>");
+    let errorVars = { code: 404, message: "Not Found!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   }
 });
 
@@ -90,8 +88,8 @@ app.get("/urls", (req, res) => {
     let templateVars = { urls: db.userURLs(currentID), user: users[currentID] || null };
     res.render("urls_index", templateVars); //passing urlDatabase to urls_index.ejs
   } else {
-    res.status(401);
-    res.send("<h1>401: Not Authorized</h1><br><p>Oops! You need to be logged in to see your urls!");
+    let errorVars = { code: 401, message: "Not Authorized!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   }
 });
 
@@ -122,8 +120,8 @@ app.post("/login", (req, res) => {
     req.session.user_id = id;
     res.redirect("/urls");
   } else {
-    res.status(400);
-    res.send("<h1>403: Invalid email or password</h1>");
+    let errorVars = { code: 400, message: "Wrong Email or Password!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   }
 });
 
@@ -138,8 +136,8 @@ app.post("/logout", (req, res) => {
 app.post("/urls", (req, res) => {
   if (!req.session.user_id)
   {
-    res.status(401);
-    res.send("<h1>401: Not Authorized").end();
+    let errorVars = { code: 401, message: "Not Authorized!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   } else {
     let long = validateURL(req.body.longURL);
     let short = generateRandomKey(6);
@@ -168,22 +166,21 @@ app.post("/register", (req, res) => {
       req.session.user_id = newUserID;
       res.redirect("/urls");
     } else {
-      res.status(400);
-      // res.clearCookie("user_id");
-      res.send("<h1>400 email already registered</h1>");
+    let errorVars = { code: 400, message: "Email already registered!"};
+    res.render("error_page", errorVars).status(errorVars.code);
     }
 
   } else {
-    res.status(400);
-    // res.clearCookie("user_id");
-    res.send("<h1>400 no email or password</h1>");
+    let errorVars = { code: 400, message: "No email or password!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   }
 });
 
 // Deletes a given URL
 app.post("/urls/:id/delete", (req, res) => {
   if(!req.session.user_id) {
-    res.status(401).send("<h1>401: Not Authorized").end();
+    let errorVars = { code: 401, message: "Not Authorized!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   } else {
     let ownerID = db.owner(req.params.id);
     let currentID = req.session.user_id;
@@ -192,8 +189,8 @@ app.post("/urls/:id/delete", (req, res) => {
       db.delete(currentID, short);
       res.redirect("/urls");
     } else {
-      res.status(401);
-      res.send("<h1>401: Not Authorized");
+    let errorVars = { code: 401, message: "Not Authorized!"};
+    res.render("error_page", errorVars).status(errorVars.code);
     }
   }
 });
@@ -201,7 +198,8 @@ app.post("/urls/:id/delete", (req, res) => {
 // Updates a given URL
 app.post("/urls/:id", (req, res) => {
   if (!req.session.user_id || req.session.user_id != db.owner(req.params.id)) {
-    res.status(401).send("<h1>401: Not Authorized").end();
+    let errorVars = { code: 401, message: "Not Authorized!"};
+    res.render("error_page", errorVars).status(errorVars.code);
   } else {
     let date = dateParser();
     let long = validateURL(req.body.newLong);
