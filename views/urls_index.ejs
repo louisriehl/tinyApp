@@ -25,6 +25,7 @@
         <th>Original Url</th>
         <th>Date Created</th>
         <th>Visits</th>
+        <th>Unique Visitors</th>
         <th></th>
         <th></th>
       </tr>
@@ -33,6 +34,7 @@
           <td><a href="<%= urls[short]["long"] %>"><%= urls[short]["long"] %></a></td>
           <td><%= urls[short]["date"]%></td>
           <td><%= urls[short]["visits"]%></td>
+          <td><%= urls[short]["unique"]%></td>
           <td><form action="/urls/<%= short %>"><button type="submit">Edit</button></form></td>
           <td>
             <form method="POST" action="/urls/<%= short %>/delete">

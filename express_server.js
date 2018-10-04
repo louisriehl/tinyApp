@@ -59,6 +59,11 @@ app.get("/u/:id", (req, res) => {
     res.render("error_page", errorVars).status(errorVars.code);
   }
   db.addVisit(id, short);
+  if (!req.cookies[short]) {
+    res.cookie(short, true);
+    db.addUnique(id, req.params.id);
+    console.log(res.cookies);
+  }
   let destination = db.getOne(id, short);
   res.status(301);
   res.redirect(destination);
@@ -79,7 +84,8 @@ app.get("/urls/:id", (req, res) => {
       long: db.getOne(currentID, shortURL),
       user: users[currentID],
       date: db.getDate(currentID, shortURL),
-      visits: db.getVisits(currentID, shortURL)};
+      visits: db.getVisits(currentID, shortURL),
+      unique: db.getUniques(currentID, shortURL)};
     res.render("urls_show", templateVars);
   } else {
     let errorVars = { code: 404, message: "Not Found!"};
