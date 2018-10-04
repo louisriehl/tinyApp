@@ -179,7 +179,8 @@ app.post("/register", (req, res) => {
       res.redirect("/urls");
     } else {
     let errorVars = { code: 400, message: "Email already registered!"};
-    res.render("error_page", errorVars).status(errorVars.code);
+    res.status(errorVars.code);
+    res.render("error_page", errorVars);
     }
 
   } else {
