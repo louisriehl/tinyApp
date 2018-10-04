@@ -132,7 +132,8 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     let errorVars = { code: 400, message: "Wrong Email or Password!"};
-    res.render("error_page", errorVars).status(errorVars.code);
+    res.status(errorVars.code);
+    res.render("error_page", errorVars);
   }
 });
 

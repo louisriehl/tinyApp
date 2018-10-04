@@ -20,6 +20,7 @@
   <!-- Generate a table of the user's URLs IF they're logged in! -->
   <% if (urls && user) { %>
     <table class="table" align="center" style=" text-align: center; padding-top: 20px; padding-bottom: 20px;">
+      <thead class="thead-dark">
       <tr>
         <th>Short URL</th>
         <th>Original Url</th>
@@ -29,6 +30,7 @@
         <th></th>
         <th></th>
       </tr>
+      </thead>
       <% for (let short in urls) { %>
         <tr>
           <td><a href="/u/<%=short%>"><%= short %></a></td>
@@ -36,16 +38,16 @@
           <td><%= urls[short]["date"]%></td>
           <td><%= urls[short]["visits"]%></td>
           <td><%= urls[short]["unique"]%></td>
-          <td><form action="/urls/<%= short %>"><button type="submit" class="btn-primary">Edit</button></form></td>
+          <td><form action="/urls/<%= short %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
           <td>
             <form method="POST" action="/urls/<%= short %>/delete">
-              <button type="delete" class="btn-danger">Remove</button>
+              <button type="delete" class="btn btn-danger">Remove</button>
             </form>
           </td>
         </tr>
         <% }; %>
     </table>
-    <form action="/urls/new"><button type="submit" class="btn-success">Shorten a new URL!</button>
+    <form action="/urls/new"><button type="submit" class="btn btn-success btn-block">Shorten a new URL!</button>
   <% } else { %>
     <p>You need to log in or register before viewing urls!</p>
   <% } %>
