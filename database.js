@@ -29,8 +29,10 @@ module.exports = {
   getDate: (id, short) => db[id][short]["date"],
   getVisits: (id, short) => db[id][short]["visits"],
   getUniques: (id, short) => db[id][short]["unique"],
+  getTracking: (id, short) => db[id][short]["tracking"],
   addVisit: (id, short) => { db[id][short].visits++},
   addUnique: (id, short) => { db[id][short].unique++},
+  addVisitor: (id, short, key, time) => { db[id][short]["tracking"].push({[key]: [time]})},
   add: (id, short, lo, dt) => { db[id][short] = { long: lo, date: dt, visits: 0, unique: 0, tracking: []}},
   delete: (id, short) => { delete db[id][short]},
   owner: (short) => {
