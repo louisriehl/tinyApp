@@ -19,12 +19,19 @@
         <th>Made On</th>
         <th>Total Visits</th>
         <th>Unique Visitors</th>
+        <th>Visitor Statistics</th>
        </tr>
        <tr>
         <td><%= short %></td>
         <td><%= date %></td>
         <td><%= visits %></td>
         <td><%= unique %></td>
+        <td><% tracking.forEach(element => {%>
+          <% for(let thing in element) { %>
+             <p><%= thing %> visited on <br> <%= element[thing]%></p>
+              <% } %>
+            <% }); %>
+        </td>
       </tr>
       </thead>
     </table>

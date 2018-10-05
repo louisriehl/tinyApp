@@ -65,6 +65,12 @@ app.get("/u/:id", (req, res) => {
     res.cookie(short, true);
     db.addUnique(id, req.params.id);
   }
+  if(!req.cookies.visitor_id) {
+    res.cookie("visitor_id", generateRandomKey(6));
+  }
+  let visitID = req.cookies.visitor_id;
+  let time = new Date();
+  db.addVisitor(id, short, visitID, time);
   let destination = db.getOne(id, short);
   res.status(301);
   res.redirect(destination);
@@ -86,7 +92,8 @@ app.get("/urls/:id", (req, res) => {
       user: users[currentID],
       date: db.getDate(currentID, shortURL),
       visits: db.getVisits(currentID, shortURL),
-      unique: db.getUniques(currentID, shortURL)};
+      unique: db.getUniques(currentID, shortURL),
+      tracking: db.getTracking(currentID, shortURL)};
     res.render("urls_show", templateVars);
   } else {
     let errorVars = { code: 404, message: "Not Found!"};
