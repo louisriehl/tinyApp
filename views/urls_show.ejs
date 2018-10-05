@@ -28,7 +28,7 @@
       </tr>
       </thead>
     </table>
-    <form method="POST" action="/urls/<%= short%>" style=" display: inline-block; margin:auto; width: 50%;">
+    <form method="POST" action="/urls/<%= short%>?_method=PUT" style=" display: inline-block; margin:auto; width: 50%;">
       <div class="form-group">
       <label for="newLong" style="margin-top: 10px;">Update URL</label>
       <input id="newLong" type="text" name="newLong" class="form-control" style=" width: 100%;">

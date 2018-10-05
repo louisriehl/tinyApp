@@ -38,9 +38,9 @@
           <td><%= urls[short]["date"]%></td>
           <td><%= urls[short]["visits"]%></td>
           <td><%= urls[short]["unique"]%></td>
-          <td><form action="/urls/<%= short %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
+          <td><form method="GET" action="/urls/<%= short %>"><button type="submit" class="btn btn-primary">Edit</button></form></td>
           <td>
-            <form method="POST" action="/urls/<%= short %>/delete">
+            <form method="POST" action="/urls/<%= short %>?_method=DELETE">
               <button type="delete" class="btn btn-danger">Remove</button>
             </form>
           </td>
