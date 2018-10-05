@@ -4,11 +4,13 @@ const cookieSession = require('cookie-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 const app = express();
 const PORT = 8080; //default port
 
 /* --- EXPRESS CONFIG ---*/
 app.set("view engine", "ejs");
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("views/media"));
 app.use(cookieParser());
@@ -145,7 +147,7 @@ app.post("/logout", (req, res) => {
 });
 
 // Post to urls index first validates URL then adds the new url and key
-app.post("/urls", (req, res) => {
+app.put("/urls", (req, res) => {
   if (!req.session.user_id)
   {
     let errorVars = { code: 401, message: "Not Authorized!"};
@@ -161,7 +163,7 @@ app.post("/urls", (req, res) => {
 });
 
 // Registers a new user
-app.post("/register", (req, res) => {
+app.put("/register", (req, res) => {
   let newUserID = generateRandomKey(6);
   let newEmail = req.body.email;
   let newPass = bcrypt.hashSync(req.body.password, 10);
@@ -191,7 +193,7 @@ app.post("/register", (req, res) => {
 });
 
 // Deletes a given URL
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id", (req, res) => {
   if(!req.session.user_id) {
     let errorVars = { code: 401, message: "Not Authorized!"};
     res.render("error_page", errorVars).status(errorVars.code);
@@ -210,7 +212,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // Updates a given URL
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   if (!req.session.user_id || req.session.user_id != db.owner(req.params.id)) {
     let errorVars = { code: 401, message: "Not Authorized!"};
     res.render("error_page", errorVars).status(errorVars.code);
